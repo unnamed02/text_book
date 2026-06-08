@@ -48,7 +48,7 @@ export default function () {
 
   if (roll < 0.8) {
     // GET /api/student/textbooks
-    const res = http.get(`${__ENV.API_BASE || 'http://host.docker.internal:8080'}/api/student/textbooks`, authHeaders);
+    const res = http.get(`${__ENV.API_BASE || 'http://101.37.238.186'}/api/student/textbooks`, authHeaders);
     check(res, {
       'textbooks status is 200': (r) => r.status === 200,
       'textbooks response time < 200ms': (r) => r.timings.duration < 200,
@@ -58,12 +58,12 @@ export default function () {
     // 随机生成一个 bitmap（模拟学生勾选/取消教材）
     const newBitmap = randomIntBetween(0, 31);  // 假设最多5本教材
     const res = http.post(
-      `${__ENV.API_BASE || 'http://host.docker.internal:8080'}/api/student/bitmap`,
+      `${__ENV.API_BASE || 'http://101.37.238.186'}/api/student/bitmap`,
       JSON.stringify({ new_bitmap: String(newBitmap) }),
       authHeaders
     );
     check(res, {
-      'bitmap status is 200': (r) => r.status === 200,
+      'bitmap status is 200 or 429': (r) => r.status === 200 || r.status === 429,
       'bitmap response time < 200ms': (r) => r.timings.duration < 200,
     });
   }

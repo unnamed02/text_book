@@ -76,3 +76,6 @@ docker run --rm -v "${PWD}:/scripts" -w /scripts grafana/k6 run stress_test.js
 2. P95 响应时间 < 200ms（UPDATE 一个 INT 字段应该很快）
 3. PostgreSQL 中不同 student_id 的行级锁不互相阻塞
 4. 压测结束后，数据一致性正常（bitmap 值正确写入）
+
+
+ curl -X POST http://localhost:8000/api/orders/1/students/reset-all -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc3OTg2NDg4OH0.Y-4uiXRDlPgfLZUGgD31fSFioYACmCW-262PsO6EJRs"

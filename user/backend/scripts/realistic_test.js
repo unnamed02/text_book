@@ -25,7 +25,7 @@ export const options = {
   },
 };
 
-const apiBase = __ENV.API_BASE || 'http://host.docker.internal:8080';
+const apiBase = __ENV.API_BASE || 'http://101.37.238.186';
 
 function sha256(text) {
   const hash = crypto.sha256(text, 'hex');
@@ -129,7 +129,7 @@ export default function () {
   const student = students[idx];
   const sid = student.student_id;
   const defaultPassword = '123456';
-  const newPassword = 'NewPass' + sid.slice(-4); // 每个学生的密码不同
+  const newPassword = '654321';
 
   // ---- 1. 首次登录（默认密码） ----
   const login1 = login(sid, defaultPassword);

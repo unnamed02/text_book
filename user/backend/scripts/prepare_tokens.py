@@ -21,7 +21,7 @@ import httpx
 
 # 配置
 DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:123456@localhost:5432/admin")
-API_BASE = os.getenv("API_BASE", "http://localhost:8080")
+API_BASE = os.getenv("API_BASE", "http://101.37.238.186")
 LIMIT = int(os.getenv("TOKEN_LIMIT", "100"))  # 预生成多少个 token
 
 
