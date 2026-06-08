@@ -803,12 +803,14 @@ async def summarize_order(order_id: int, db: AsyncSession = Depends(get_db), cur
     await db.execute(text("UPDATE order_items SET actual_count = 0 WHERE order_id = :order_id").bindparams(order_id=order_id))
     await db.execute(text("UPDATE classes SET confirmed_count = 0 WHERE order_id = :order_id").bindparams(order_id=order_id))
 
-    # Step 2: 计算班级已确认人数（所有学生都计入）
+    # Step 2: 计算班级已确认人数（只统计已提交选书的学生）
     await db.execute(text("""
         UPDATE classes c
         SET confirmed_count = (
             SELECT COUNT(*) FROM student_accounts sa
-            WHERE sa.order_id = c.order_id AND sa.class_name = c.class_name
+            WHERE sa.order_id = c.order_id
+              AND sa.class_name = c.class_name
+              AND sa.is_confirmed = true
         )
         WHERE c.order_id = :order_id
     """).bindparams(order_id=order_id))
@@ -860,7 +862,7 @@ async def summarize_order(order_id: int, db: AsyncSession = Depends(get_db), cur
         text("""
             SELECT
                 (SELECT COUNT(*) FROM student_accounts WHERE order_id = :order_id) AS total_students,
-                (SELECT COUNT(*) FROM student_accounts WHERE order_id = :order_id) AS confirmed_students,
+                (SELECT COUNT(*) FROM student_accounts WHERE order_id = :order_id AND is_confirmed = true) AS confirmed_students,
                 (SELECT COALESCE(SUM(actual_count), 0) FROM order_items WHERE order_id = :order_id) AS total_actual,
                 (SELECT COALESCE(SUM(headcount), 0) FROM classes WHERE order_id = :order_id) AS total_headcount
         """).bindparams(order_id=order_id)
