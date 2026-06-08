@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\\(Get-Content 'D:\\\\Work\\\\text_book\\\\admin\\\\frontend\\\\src\\\\pages\\\\orders\\\\SelectOrder.jsx' -Raw\\) -replace \"import { useCurrentOrder } from '../../contexts/CurrentOrderContext';\", \"import { useCurrentOrder } from '../../contexts/CurrentOrderContext';\\\\nimport api from '../../api';\" | Set-Content 'D:\\\\Work\\\\text_book\\\\admin\\\\frontend\\\\src\\\\pages\\\\orders\\\\SelectOrder.jsx' -NoNewline)"
+    ]
+  }
+}

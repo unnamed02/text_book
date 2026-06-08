@@ -1,0 +1,120 @@
+<view class="page-container">
+  <!-- 学生信息卡片 -->
+  <view class="card info-card">
+    <view class="flex-between">
+      <view>
+        <view class="page-title">教材确认</view>
+        <view class="info-row">
+          <text class="text-secondary">学号：{{studentInfo.student_id}}  姓名：{{studentInfo.name}}  班级：{{studentInfo.class_name}}</text>
+        </view>
+      </view>
+      <view class="stats-row">
+        <view wx:if="{{isConfirmed}}" class="stat-item">
+          <text class="stat-value text-success">已确认</text>
+          <text class="stat-label">状态</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{textbooks.length}}</text>
+          <text class="stat-label">共</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value text-success">{{confirmedCount}}</text>
+          <text class="stat-label">已选</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已确认提示 -->
+  <view wx:if="{{isConfirmed}}" class="card" style="background: #f6ffed; border: 1rpx solid #b7eb8f;">
+    <view style="color: #52c41a; font-size: 28rpx;"><text>选书结果已确认</text></view>
+    <view style="color: #666; font-size: 24rpx; margin-top: 8rpx;">如需修改，请点击下方「取消确认」按钮，10 秒冷却期后可重新选择。</view>
+  </view>
+
+  <!-- 已选教材摘要 -->
+  <view wx:if="{{confirmedCount > 0}}" class="card">
+    <view class="section-title">已选教材</view>
+    <view wx:for="{{textbooks}}" wx:key="textbook_id" wx:if="{{item.checked}}" class="selected-item">
+      {{item.name}}（{{item.course_name}}）<text wx:if="{{item.price}}" class="text-secondary">¥{{item.price}}</text>
+    </view>
+  </view>
+
+  <!-- 教材列表 -->
+  <view class="card" style="padding: 0;">
+    <view class="table-header">
+      <view class="th th-name">教材名</view>
+      <view class="th th-course">课程</view>
+      <view class="th th-price">价格</view>
+      <view class="th th-action">选订</view>
+    </view>
+    <scroll-view scroll-y style="max-height: 70vh;">
+      <view wx:for="{{textbooks}}" wx:key="textbook_id" class="table-row {{item.checked ? 'row-active' : ''}} {{isConfirmed ? 'row-disabled' : ''}}" data-index="{{index}}" bindtap="onToggle">
+        <view class="td td-name">
+          <view class="td-title">{{item.name}}</view>
+          <view class="td-sub text-secondary">{{item.isbn}}</view>
+        </view>
+        <view class="td td-course">{{item.course_name}}</view>
+        <view class="td td-price">{{item.price ? '¥'+item.price : '-'}}</view>
+        <view class="td td-action">
+          <checkbox checked="{{item.checked}}" disabled="{{isConfirmed}}" />
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view wx:if="{{!isConfirmed}}">
+      <button class="btn-primary" bindtap="handleSave" loading="{{saving}}">提交并确认</button>
+    </view>
+    <view wx:else>
+      <button class="btn-default" bindtap="openCancelModal" loading="{{cancelling}}">取消确认</button>
+    </view>
+    <button class="btn-default" style="margin-top: 16rpx;" bindtap="handleLogout">退出登录</button>
+  </view>
+</view>
+
+<!-- 自定义确认弹窗 -->
+<view wx:if="{{confirmModalVisible}}" class="modal-mask">
+  <view class="modal-content">
+    <view class="modal-title">确认提交</view>
+    <view style="color: #d48806; font-size: 28rpx; margin-bottom: 16rpx;">注意：因出版社再版、停印等原因，实际教材可能与征订不一致。</view>
+    <view style="color: #999; font-size: 26rpx; margin-bottom: 32rpx;">如需修改，可点击"取消确认"，10 秒冷却期后可重新选择。</view>
+
+    <view wx:if="{{confirmCooldown > 0}}" style="text-align: center; color: #999; font-size: 26rpx; margin-bottom: 24rpx;">
+      请仔细阅读，{{confirmCooldown}} 秒后可确认
+    </view>
+
+    <view class="modal-btns">
+      <button class="btn-default" style="flex: 1; margin-right: 16rpx;" bindtap="onConfirmClose">取消</button>
+      <button class="{{confirmCooldown > 0 ? 'btn-disabled' : 'btn-primary'}}" style="flex: 1;" bindtap="handleConfirmSave" disabled="{{confirmCooldown > 0 || saving}}" loading="{{saving}}">
+        {{confirmCooldown > 0 ? '确认提交 (' + confirmCooldown + 's)' : '确认提交'}}
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 自定义取消确认弹窗 -->
+<view wx:if="{{cancelModalVisible}}" class="modal-mask">
+  <view class="modal-content">
+    <view class="modal-title">取消确认</view>
+    <view style="color: #d48806; font-size: 28rpx; margin-bottom: 16rpx;">注意：取消确认后，之前的选书结果将失效，您需要重新选择。</view>
+    <view style="color: #999; font-size: 26rpx; margin-bottom: 32rpx;">取消后需等待 10 秒冷却期，方可重新提交。</view>
+
+    <view wx:if="{{confirmCooldown > 0}}" style="text-align: center; color: #999; font-size: 26rpx; margin-bottom: 24rpx;">
+      请仔细阅读，{{confirmCooldown}} 秒后可确认
+    </view>
+
+    <view class="modal-btns">
+      <button class="btn-default" style="flex: 1; margin-right: 16rpx;" bindtap="onCancelModalClose">关闭</button>
+      <button class="{{confirmCooldown > 0 ? 'btn-disabled' : 'btn-primary'}}" style="flex: 1;" bindtap="handleCancelModalConfirm" disabled="{{confirmCooldown > 0 || cancelling}}" loading="{{cancelling}}">
+        {{confirmCooldown > 0 ? '确认取消 (' + confirmCooldown + 's)' : '确认取消'}}
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 冷却弹窗 -->
+<modal title="操作太频繁" hidden="{{!cooldownModalVisible}}" bindconfirm="onCooldownClose" confirmText="知道了" showCancel="{{false}}">
+  <view>{{cooldownMsg}}</view>
+</modal>

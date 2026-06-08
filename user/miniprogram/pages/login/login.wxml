@@ -1,0 +1,23 @@
+<view class="login-container">
+  <view class="login-card">
+    <view class="login-title">学生选书系统</view>
+
+    <view class="form-item">
+      <text class="label">学号</text>
+      <input class="input" placeholder="请输入学号" value="{{studentId}}" bindinput="onStudentIdInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">密码</text>
+      <input class="input" placeholder="初始密码 123456" password value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+
+    <button class="btn-primary" bindtap="handleLogin" loading="{{loading}}">登录</button>
+
+    <view class="hint text-secondary">提示：连续输错 5 次密码将锁定账号 15 分钟</view>
+  </view>
+</view>
+
+<modal title="登录失败" hidden="{{!modalVisible}}" bindconfirm="onModalClose" confirmText="确定" showCancel="{{false}}">
+  <view>{{modalMsg}}</view>
+</modal>
