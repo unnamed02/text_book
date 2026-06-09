@@ -518,16 +518,13 @@ function OrderDetail() {
               </Button>
               {summaryResult && (
                 <Row gutter={[16, 16]}>
-                  <Col xs={12} sm={6}>
+                  <Col xs={12} sm={8}>
                     <Statistic title="总学生数" value={summaryResult.total_students} suffix="人" />
                   </Col>
-                  <Col xs={12} sm={6}>
+                  <Col xs={12} sm={8}>
                     <Statistic title="已选书" value={summaryResult.confirmed_students} suffix="人" valueStyle={{ color: '#52c41a' }} />
                   </Col>
-                  <Col xs={12} sm={6}>
-                    <Statistic title="理论总用量" value={summaryResult.total_headcount} suffix="本" />
-                  </Col>
-                  <Col xs={12} sm={6}>
+                  <Col xs={12} sm={8}>
                     <Statistic title="实际总用量" value={summaryResult.total_actual} suffix="本" valueStyle={{ color: '#1677ff' }} />
                   </Col>
                 </Row>

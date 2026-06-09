@@ -12,13 +12,13 @@ if (!studentsJson) {
   throw new Error('students.json not found. Make sure to mount it in Docker: -v $(pwd):/scripts');
 }
 const students = JSON.parse(studentsJson);
-const totalStudents = 100;
+const totalStudents = students.length;
 
 export const options = {
   scenarios: {
     realistic: {
       executor: 'shared-iterations',
-      vus: 10,              // 1000 并发
+      vus: 1000,              // 1000 并发
       iterations: totalStudents, // 8000 次迭代，每个学生一次
       maxDuration: '5m',
     },

@@ -49,6 +49,12 @@ async def main():
         if updated % 100 == 0:
             print(f"  进度: {updated}/{len(rows)}")
 
+    # 同时重置选书状态，确保测试可以重复跑
+    reset = await conn.execute(
+        "UPDATE student_accounts SET is_confirmed=false, selection_bitmap=0, last_submitted_at=NULL"
+    )
+    print(f"[INFO] 已重置 {reset} 个学生的选书状态")
+
     await conn.close()
     print(f"[INFO] 完成，已更新 {updated} 个账号")
     print("[INFO] 重启 Go 后端后，sha256 验证生效")

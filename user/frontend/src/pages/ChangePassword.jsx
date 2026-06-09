@@ -2,17 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Button, message, Typography, Alert, Modal } from 'antd';
 import api from '../api';
+import { hashSha256 } from '../utils/sha256';
 
 const { Title } = Typography;
-
-// 前端预哈希：与后端 sha256Plain 保持一致
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
 
 function ChangePassword() {
   const navigate = useNavigate();
@@ -28,8 +20,8 @@ function ChangePassword() {
     }
     setLoading(true);
     try {
-      const oldPrehash = await sha256(values.old_password);
-      const newPrehash = await sha256(values.new_password);
+      const oldPrehash = hashSha256(values.old_password);
+      const newPrehash = hashSha256(values.new_password);
       await api.post('/student/change-password', {
         old_password: oldPrehash,
         new_password: newPrehash,

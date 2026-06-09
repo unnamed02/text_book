@@ -2,17 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Button, message, Typography, Modal } from 'antd';
 import api from '../api';
+import { hashSha256 } from '../utils/sha256';
 
 const { Title, Text } = Typography;
-
-// 前端预哈希：与后端 sha256Plain 保持一致
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
 
 function Login() {
   const navigate = useNavigate();
@@ -23,7 +15,7 @@ function Login() {
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      const prehash = await sha256(values.password);
+      const prehash = hashSha256(values.password);
       const res = await api.post('/student/login', {
         student_id: values.student_id,
         password: prehash,
